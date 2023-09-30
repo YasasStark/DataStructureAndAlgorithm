@@ -1,69 +1,86 @@
-//gfg
-//only the logic part
+#include <iostream>
+#include <vector>
+#include <stack>
 
-/* Structure for tree and linked list
+using namespace std;
 
-struct Node
-{
+// Structure for a binary tree node
+struct Node {
     int data;
-    struct Node* left;
-    struct Node* right;
-    
-    Node(int x){
+    Node* left;
+    Node* right;
+
+    Node(int x) {
         data = x;
         left = right = NULL;
     }
 };
- */
 
-// This function should return head to the DLL
-vector<int> infixLoopc(Node *root)
-{
-    stack<Node *> s;
-    Node *temp = root;
-    vector<int> v;
+// Function to perform in-order traversal of a binary tree
+vector<int> inorderTraversal(Node* root) {
+    vector<int> result;
+    stack<Node*> s;
+    Node* curr = root;
 
-    while (s.empty() == false || temp != NULL)
-    {
-        while ((temp != NULL))
-        {
-            /* code */
-            s.push(temp);
-            temp = temp->left;
+    while (curr != NULL || !s.empty()) {
+        while (curr != NULL) {
+            s.push(curr);
+            curr = curr->left;
         }
 
-        temp = s.top();
+        curr = s.top();
         s.pop();
-        v.push_back(temp->data);
+        result.push_back(curr->data);
 
-        temp = temp->right;
+        curr = curr->right;
     }
-    return v;
+
+    return result;
 }
 
-Node *bToDLL(Node *root)
-{
-    // your code here
-    vector<int> v = infixLoopc(root);
-    int i;
-    Node *root1;
-    Node *tail;
-    for (i = 0; i < v.size(); i++)
-    {
-        int x;
-        x = v[i];
-        Node *r = newNode(x);
-        if (i == 0)
-        {
-            root1 = r;
-            tail = r;
-        }
-        else
-        {
-            tail->right = r;
-            r->left = tail;
-            tail = tail->right;
+// Function to convert a binary tree to a doubly linked list (DLL)
+Node* bToDLL(Node* root) {
+    // Perform inorder traversal to get the values in sorted order
+    vector<int> inorder = inorderTraversal(root);
+
+    Node* head = NULL;
+    Node* prev = NULL;
+
+    // Create the DLL using the values from the inorder traversal
+    for (int i = 0; i < inorder.size(); i++) {
+        Node* newNode = new Node(inorder[i]);
+
+        if (head == NULL) {
+            head = newNode;
+            prev = newNode;
+        } else {
+            prev->right = newNode;
+            newNode->left = prev;
+            prev = newNode;
         }
     }
-    return root1;
+
+    return head;
+}
+
+// Driver code
+int main() {
+    // Create a binary tree
+    Node* root = new Node(4);
+    root->left = new Node(2);
+    root->right = new Node(5);
+    root->left->left = new Node(1);
+    root->left->right = new Node(3);
+
+    // Convert the binary tree to a DLL
+    Node* dllHead = bToDLL(root);
+
+    // Print the DLL
+    Node* curr = dllHead;
+    while (curr != NULL) {
+        cout << curr->data << " ";
+        curr = curr->right;
+    }
+
+    return 0;
 }
